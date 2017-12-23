@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">Simec</string>
+    <string name="tel_rasp">Тележка распределителя</string>
+    <string name="dv_doz">Двигатель дозатора</string>
+    <string name="qwik_up">Быстрый подъем</string>
+    <string name="qwik_down">Быстрый опуск</string>
+    <string name="gl_dv">Главный двигатель</string>
+    <string name="nasos">Насос</string>
+    <string name="opusk_ram">Опуск рамы</string>
+    <string-array name="titles">
+        <item>@string/gl_dv</item>
+        <item>@string/nasos</item>
+        <item>@string/opusk_ram</item>
+    </string-array>
+    <string-array name="showcoments">
+        <item>Ток в амперах</item>
+        <item>Ток в амперах</item>
+        <item>Скорость в мм/ч</item>
+    </string-array>
+    <string-array name="doptitles">
+        <item>@string/gl_dv</item>
+        <item>@string/nasos</item>
+        <item>@string/opusk_ram</item>
+        <item>@string/tel_rasp</item>
+        <item>@string/dv_doz</item>
+        <item>@string/qwik_up</item>
+        <item>@string/qwik_down</item>
+    </string-array>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="GRNITIR">"ГРАНИТ-ИР"\nsimec</string>
+    <string name="uprav">Управление</string>
+    <string name="setts">Настройки</string>
+    <string name="osvesh">Освещение</string>
+    <string name="corrs">Корректировка</string>
+    <string name="connects">Соединения</string>
+    <string name="textview">TextView</string>
+    <string name="start">Пуск</string>
+    <string name="stop">стоп</string>
+    <string name="amps">Ток в амперах:</string>
+    <string name="_67_8">67.8</string>
+</resources>

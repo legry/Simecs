@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/corr"
+        android:title="@string/corrs" />
+    <item
+        android:id="@+id/connects"
+        android:title="@string/connects" />
+</menu>

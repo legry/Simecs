@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#880e4f</color>
+    <color name="colorPrimaryDark">#560027</color>
+    <color name="colorAccent">#bc477b</color>
+    <color name="tab_text_color">#f8bbd0</color>
+    <color name="tab_sel_text_color">#ffffff</color>
+    <color name="floatbtnbck">#d50000</color>
+    <color name="cardcolor">#ffeeff</color>
+</resources>
