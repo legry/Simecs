@@ -1,6 +1,7 @@
 package com.example.simec3;
 
-public interface ChangeListener {
+interface ChangeListener {
     void OnChangeListener(boolean isConnect);
     void OnDataReadListener(String data);
+    void OnEnableListener(boolean isEnabled);
 }

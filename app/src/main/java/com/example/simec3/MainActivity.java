@@ -1,5 +1,6 @@
 package com.example.simec3;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -76,7 +77,8 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
             case R.id.connects:
-
+                Intent intent = new Intent(this, SettingConnects.class);
+                startActivity(intent);
                 break;
             case android.R.id.home:
                 mDrawer.openDrawer(GravityCompat.START);

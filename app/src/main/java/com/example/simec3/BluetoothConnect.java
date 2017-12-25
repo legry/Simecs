@@ -37,7 +37,7 @@ class BluetoothConnect {
     private Context context;
     private boolean change = false;
 
-    BluetoothConnect(Context context, ChangeListener changeListener) {
+    BluetoothConnect(Context context, final ChangeListener changeListener) {
         this.changeListener = changeListener;
         handler = new Handler();
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -51,7 +51,7 @@ class BluetoothConnect {
                 if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
                     int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, 0);
                     if (state == BluetoothAdapter.STATE_ON) {
-                        BluetoothStart();
+                        changeListener.OnEnableListener(true);
                     }
                 }
                 if (action.equals(BluetoothDevice.ACTION_ACL_DISCONNECTED)) {
@@ -66,25 +66,18 @@ class BluetoothConnect {
             }
         };
         context.registerReceiver(receiver, filter);
-        if (bluetoothAdapter.isEnabled()) {
-            BluetoothStart();
-        } else {
+        if (!bluetoothAdapter.isEnabled()) {
             bluetoothAdapter.enable();
         }
     }
 
-    private void BluetoothStart() {
-        SharedPreferences preference = context.getSharedPreferences("SvdDevs", Context.MODE_PRIVATE);
+    public void BluetoothStart(String settsfilename) {
+        SharedPreferences preference = context.getSharedPreferences(settsfilename, Context.MODE_PRIVATE);
         editor = preference.edit();
         editor.apply();
         deviceAddress = preference.getString("devadr", "");
-        if (!deviceAddress.isEmpty()) {
-            bluetoothDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
-            BluetootCreat();
-        }
-        else {
-            ShowDialog();
-        }
+        bluetoothDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
+        BluetootCreat();
     }
 
     private void BluetootCreat() {
@@ -163,15 +156,15 @@ class BluetoothConnect {
         }
     };
 
-    private void ShowDialog() {
-        ArrayAdapter<String> devices = new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
+    public ArrayAdapter<String> ShowDialog() {
+        ArrayAdapter<String> devices = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item);
         final ArrayAdapter<BluetoothDevice> bluetoothdevices = new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
         final Set<BluetoothDevice> bondedDevices = bluetoothAdapter.getBondedDevices();
         for (BluetoothDevice device : bondedDevices) {
             devices.add(device.getName() + "\n" + device.getAddress());
             bluetoothdevices.add(device);
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+       /* AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setAdapter(devices, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -186,7 +179,8 @@ class BluetoothConnect {
                 dialog.dismiss();
             }
         }).create();
-        builder.show();
+        builder.show(); */
+       return devices;
     }
 
     void WriteData(final String data) {
