@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -13,9 +14,11 @@ import java.util.List;
 
 class SettsConnectAdapter extends RecyclerView.Adapter<SettsConnectAdapter.MyHolder> {
     private List<DevConns> devConnses;
+    private BluetoothConnect btConn;
 
-    public SettsConnectAdapter(List<DevConns> devConnses) {
+    SettsConnectAdapter(List<DevConns> devConnses, BluetoothConnect btConn) {
         this.devConnses = devConnses;
+        this.btConn = btConn;
     }
 
     @Override
@@ -27,6 +30,17 @@ class SettsConnectAdapter extends RecyclerView.Adapter<SettsConnectAdapter.MyHol
     public void onBindViewHolder(MyHolder holder, int position) {
         holder.titles.setText(devConnses.get(position).getTitles());
         holder.devices.setAdapter(devConnses.get(position).getDevices());
+        holder.devices.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                btConn.setDevice(i);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     @Override

@@ -42,28 +42,28 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:gravity="right"
         android:orientation="vertical">
 
         <ToggleButton
             android:id="@+id/connects"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:background="@drawable/toggle_states"
-            android:checked="false"
             android:textColor="@android:color/white"
-            android:textOff="отключится"
-            android:textOn="Подключится" />
+            android:textOff="Подключится"
+            android:textOn="отключится" />
 
         <CheckBox
             android:id="@+id/autconns"
             style="@style/Widget.AppCompat.CompoundButton.CheckBox"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:buttonTint="@android:color/black"
-            android:checked="true"
+            android:checked="false"
             android:text="Автоматически"
             android:textColor="@android:color/black"
             app:buttonTint="@color/colorAccent" />

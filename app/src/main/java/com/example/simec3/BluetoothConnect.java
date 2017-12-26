@@ -1,15 +1,12 @@
 package com.example.simec3;
 
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.widget.ArrayAdapter;
 
@@ -22,7 +19,6 @@ import java.util.Set;
 import java.util.UUID;
 
 class BluetoothConnect {
-    private SharedPreferences.Editor editor;
     private String deviceAddress;
     private BluetoothAdapter bluetoothAdapter;
     private BroadcastReceiver receiver;
@@ -35,7 +31,8 @@ class BluetoothConnect {
     private String data = "";
     private BufferedReader bfRdr;
     private Context context;
-    private boolean change = false;
+    private ArrayAdapter<String> devices;
+    private ArrayAdapter<BluetoothDevice> bluetoothdevices;
 
     BluetoothConnect(Context context, final ChangeListener changeListener) {
         this.changeListener = changeListener;
@@ -51,7 +48,7 @@ class BluetoothConnect {
                 if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
                     int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, 0);
                     if (state == BluetoothAdapter.STATE_ON) {
-                        changeListener.OnEnableListener(true);
+                        getBondeds();
                     }
                 }
                 if (action.equals(BluetoothDevice.ACTION_ACL_DISCONNECTED)) {
@@ -68,19 +65,12 @@ class BluetoothConnect {
         context.registerReceiver(receiver, filter);
         if (!bluetoothAdapter.isEnabled()) {
             bluetoothAdapter.enable();
+        } else {
+            getBondeds();
         }
     }
 
-    public void BluetoothStart(String settsfilename) {
-        SharedPreferences preference = context.getSharedPreferences(settsfilename, Context.MODE_PRIVATE);
-        editor = preference.edit();
-        editor.apply();
-        deviceAddress = preference.getString("devadr", "");
-        bluetoothDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
-        BluetootCreat();
-    }
-
-    private void BluetootCreat() {
+    void ConnectCreat() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -91,7 +81,7 @@ class BluetoothConnect {
                         e.printStackTrace();
                     }
                 }
-                while (!bluetoothSocket.isConnected() && !change) {
+                while (!bluetoothSocket.isConnected()) {
                     try {
                         bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
                         bluetoothSocket.connect();
@@ -99,7 +89,6 @@ class BluetoothConnect {
                         e.printStackTrace();
                     }
                 }
-                if (!change) {
                     try {
                         os = bluetoothSocket.getOutputStream();
                         is = bluetoothSocket.getInputStream();
@@ -111,14 +100,10 @@ class BluetoothConnect {
                                 data = bfRdr.readLine();
                                 handler.post(runreader);
                             }
-                            if (change) {
-                                bluetoothSocket.close();
-                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }
                 handler.post(connectreader);
             }
         }).start();
@@ -137,51 +122,45 @@ class BluetoothConnect {
         }
     };
 
-    void Change() {
-        change = true;
-    }
-
     private Runnable connectreader = new Runnable() {
         @Override
         public void run() {
             changeListener.OnChangeListener(bluetoothSocket.isConnected());
             if (!bluetoothSocket.isConnected()) {
-                if (!change) {
-                    BluetootCreat();
-                } else {
-                    change = false;
-                    ShowDialog();
-                }
+                ConnectCreat();
             }
         }
     };
 
-    public ArrayAdapter<String> ShowDialog() {
-        ArrayAdapter<String> devices = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item);
-        final ArrayAdapter<BluetoothDevice> bluetoothdevices = new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
-        final Set<BluetoothDevice> bondedDevices = bluetoothAdapter.getBondedDevices();
-        for (BluetoothDevice device : bondedDevices) {
-            devices.add(device.getName() + "\n" + device.getAddress());
-            bluetoothdevices.add(device);
-        }
-       /* AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setAdapter(devices, new DialogInterface.OnClickListener() {
+    private void getBondeds() {
+        new Thread(new Runnable() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                bluetoothDevice = bluetoothdevices.getItem(which);
-                if (bluetoothDevice != null) {
-                    deviceAddress = bluetoothDevice.getAddress();
+            public void run() {
+                devices = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item);
+                bluetoothdevices = new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
+                Set<BluetoothDevice> bondedDevices = null;
+                while (bondedDevices == null) {
+                    bondedDevices = bluetoothAdapter.getBondedDevices();
                 }
-                editor.putString("devadr", deviceAddress);
-                    editor.apply();
-
-                BluetootCreat();
-                dialog.dismiss();
+                for (BluetoothDevice device : bondedDevices) {
+                    devices.add(device.getName() + "\n" + device.getAddress());
+                    bluetoothdevices.add(device);
+                }
+                handler.post(bondsNotyf);
             }
-        }).create();
-        builder.show(); */
-       return devices;
+        }).start();
     }
+
+    void setDevice(int pos) {
+        bluetoothDevice = bluetoothdevices.getItem(pos);
+    }
+
+    private Runnable bondsNotyf = new Runnable() {
+        @Override
+        public void run() {
+            changeListener.OnEnableListener(devices);
+        }
+    };
 
     void WriteData(final String data) {
         new Thread(new Runnable() {
