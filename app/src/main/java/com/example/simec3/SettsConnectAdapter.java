@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -14,11 +15,9 @@ import java.util.List;
 
 class SettsConnectAdapter extends RecyclerView.Adapter<SettsConnectAdapter.MyHolder> {
     private List<DevConns> devConnses;
-    private BluetoothConnect btConn;
 
-    SettsConnectAdapter(List<DevConns> devConnses, BluetoothConnect btConn) {
+    SettsConnectAdapter(List<DevConns> devConnses) {
         this.devConnses = devConnses;
-        this.btConn = btConn;
     }
 
     @Override
@@ -27,18 +26,26 @@ class SettsConnectAdapter extends RecyclerView.Adapter<SettsConnectAdapter.MyHol
     }
 
     @Override
-    public void onBindViewHolder(MyHolder holder, int position) {
+    public void onBindViewHolder(final MyHolder holder, int position) {
         holder.titles.setText(devConnses.get(position).getTitles());
         holder.devices.setAdapter(devConnses.get(position).getDevices());
         holder.devices.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                btConn.setDevice(i);
+                devConnses.get(holder.getAdapterPosition()).getBluetoothConnect().setDevice(i);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
+            }
+        });
+        holder.connects.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    devConnses.get(holder.getAdapterPosition()).getBluetoothConnect().ConnectCreat();
+                }
             }
         });
     }

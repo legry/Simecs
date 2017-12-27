@@ -42,7 +42,7 @@ public class SettingConnects extends AppCompatActivity {
 
             @Override
             public void OnEnableListener(ArrayAdapter<String> devices) {
-                devConnses.add(new DevConns("Подача", devices));
+                devConnses.add(new DevConns("Подача", devices, podacha));
                 recyclerView.getAdapter().notifyDataSetChanged();
             }
         });
@@ -59,7 +59,7 @@ public class SettingConnects extends AppCompatActivity {
 
             @Override
             public void OnEnableListener(ArrayAdapter<String> devices) {
-                devConnses.add(new DevConns("Шкаф", devices));
+                devConnses.add(new DevConns("Шкаф", devices, shkaf));
                 recyclerView.getAdapter().notifyDataSetChanged();
             }
         });

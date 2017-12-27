@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.UUID;
 
 class BluetoothConnect {
-    private String deviceAddress;
     private BluetoothAdapter bluetoothAdapter;
     private BroadcastReceiver receiver;
     private BluetoothDevice bluetoothDevice = null;
@@ -68,6 +67,10 @@ class BluetoothConnect {
         } else {
             getBondeds();
         }
+    }
+
+    void ConnectDestroy() {
+
     }
 
     void ConnectCreat() {
