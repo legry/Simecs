@@ -28,41 +28,12 @@ public class SettingConnects extends AppCompatActivity {
         devConnses = new ArrayList<>();
         adapter = new SettsConnectAdapter(devConnses);
         recyclerView.setAdapter(adapter);
-        podacha = new BluetoothConnect(SettingConnects.this, new ChangeListener() {
 
-            @Override
-            public void OnChangeListener(boolean isConnect) {
+        devConnses.add(new DevConns("Подача", this));
+        recyclerView.getAdapter().notifyDataSetChanged();
 
-            }
-
-            @Override
-            public void OnDataReadListener(String data) {
-
-            }
-
-            @Override
-            public void OnEnableListener(ArrayAdapter<String> devices) {
-                devConnses.add(new DevConns("Подача", devices, podacha));
-                recyclerView.getAdapter().notifyDataSetChanged();
-            }
-        });
-        shkaf = new BluetoothConnect(this, new ChangeListener() {
-            @Override
-            public void OnChangeListener(boolean isConnect) {
-
-            }
-
-            @Override
-            public void OnDataReadListener(String data) {
-
-            }
-
-            @Override
-            public void OnEnableListener(ArrayAdapter<String> devices) {
-                devConnses.add(new DevConns("Шкаф", devices, shkaf));
-                recyclerView.getAdapter().notifyDataSetChanged();
-            }
-        });
+        devConnses.add(new DevConns("Шкаф", this));
+        recyclerView.getAdapter().notifyDataSetChanged();
     }
 
     @Override

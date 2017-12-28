@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
@@ -26,26 +27,57 @@ class SettsConnectAdapter extends RecyclerView.Adapter<SettsConnectAdapter.MyHol
     }
 
     @Override
-    public void onBindViewHolder(final MyHolder holder, int position) {
+    public void onBindViewHolder(final MyHolder holder, final int position) {
         holder.titles.setText(devConnses.get(position).getTitles());
-        holder.devices.setAdapter(devConnses.get(position).getDevices());
-        holder.devices.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        devConnses.get(position).getBluetoothConnect().setEnabledListener(new EnabledListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                devConnses.get(holder.getAdapterPosition()).getBluetoothConnect().setDevice(i);
-            }
+            public void OnEnableListener(ArrayAdapter<String> devices) {
+                holder.devices.setAdapter(devices);
+                SettsConnectAdapter.this.notifyDataSetChanged();
+                holder.devices.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                        devConnses.get(position).getBluetoothConnect().setDevice(i);
+                    }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
 
+                    }
+                });
             }
         });
+
+        devConnses.get(position).getBluetoothConnect().setConnectChangeListener(new ConnectChangeListener() {
+            @Override
+            public void OnConnectChangeListener(boolean isConnect) {
+                if (isConnect) {
+                    holder.statuses.setText("Статус: соединение установлено");
+                } else {
+                    holder.statuses.setText("Статус: нет соединение");
+                }
+                holder.devices.setEnabled(!isConnect);
+            }
+        });
+
         holder.connects.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
-                    devConnses.get(holder.getAdapterPosition()).getBluetoothConnect().ConnectCreat();
+                    devConnses.get(position).getBluetoothConnect().ConnectCreat();
+                } else {
+                    devConnses.get(position).getBluetoothConnect().ConnectDestroy();
                 }
+            }
+        });
+
+        holder.autconns.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                devConnses.get(holder.getAdapterPosition()).getBluetoothConnect().AutoConnect(b);
+                holder.connects.setChecked(b);
+                holder.connects.setEnabled(!b);
+                holder.devices.setEnabled(!b);
             }
         });
     }

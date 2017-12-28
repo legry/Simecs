@@ -1,26 +1,20 @@
 package com.example.simec3;
 
-import android.widget.ArrayAdapter;
+import android.content.Context;
 
 class DevConns {
     private String titles;
-    private ArrayAdapter<String> devices;
     private BluetoothConnect bluetoothConnect;
-    DevConns(String titles, ArrayAdapter<String> devices, BluetoothConnect bluetoothConnect) {
+    DevConns(String titles, Context context) {
         this.titles = titles;
-        this.devices = devices;
-        this.bluetoothConnect = bluetoothConnect;
+        bluetoothConnect = new BluetoothConnect(context);
     }
 
     String getTitles() {
         return titles;
     }
 
-    public BluetoothConnect getBluetoothConnect() {
+    BluetoothConnect getBluetoothConnect() {
         return bluetoothConnect;
-    }
-
-    ArrayAdapter<String> getDevices() {
-        return devices;
     }
 }

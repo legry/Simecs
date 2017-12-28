@@ -25,16 +25,31 @@ class BluetoothConnect {
     private BluetoothSocket bluetoothSocket = null;
     private InputStream is = null;
     private OutputStream os = null;
-    private ChangeListener changeListener;
+    private ConnectChangeListener connectChangeListener;
+    private DataReader dataReader;
+    private EnabledListener enabledListener;
     private Handler handler;
     private String data = "";
     private BufferedReader bfRdr;
     private Context context;
     private ArrayAdapter<String> devices;
     private ArrayAdapter<BluetoothDevice> bluetoothdevices;
+    private boolean create = true;
+    private boolean ok;
 
-    BluetoothConnect(Context context, final ChangeListener changeListener) {
-        this.changeListener = changeListener;
+    void setConnectChangeListener(ConnectChangeListener connectChangeListener) {
+        this.connectChangeListener = connectChangeListener;
+    }
+
+    public void setDataReader(DataReader dataReader) {
+        this.dataReader = dataReader;
+    }
+
+    void setEnabledListener(EnabledListener enabledListener) {
+        this.enabledListener = enabledListener;
+    }
+
+    BluetoothConnect(Context context) {
         handler = new Handler();
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         this.context = context;
@@ -70,7 +85,11 @@ class BluetoothConnect {
     }
 
     void ConnectDestroy() {
+        create = false;
+    }
 
+    void AutoConnect(boolean ok) {
+        this.ok = ok;
     }
 
     void ConnectCreat() {
@@ -83,6 +102,9 @@ class BluetoothConnect {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    if (!create) {
+                        break;
+                    }
                 }
                 while (!bluetoothSocket.isConnected()) {
                     try {
@@ -91,22 +113,28 @@ class BluetoothConnect {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }
-                    try {
-                        os = bluetoothSocket.getOutputStream();
-                        is = bluetoothSocket.getInputStream();
-                        InputStreamReader inStRdr = new InputStreamReader(is);
-                        bfRdr = new BufferedReader(inStRdr);
-                        handler.post(connectreader);
-                        while (bluetoothSocket.isConnected()) {
-                            if (is.available() > 0) {
-                                data = bfRdr.readLine();
-                                handler.post(runreader);
-                            }
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    if (!create) {
+                        break;
                     }
+                }
+                try {
+                    os = bluetoothSocket.getOutputStream();
+                    is = bluetoothSocket.getInputStream();
+                    InputStreamReader inStRdr = new InputStreamReader(is);
+                    bfRdr = new BufferedReader(inStRdr);
+                    handler.post(connectreader);
+                    while (bluetoothSocket.isConnected()) {
+                        if (is.available() > 0) {
+                            data = bfRdr.readLine();
+                            handler.post(runreader);
+                        }
+                        if (!create) {
+                            bluetoothSocket.close();
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 handler.post(connectreader);
             }
         }).start();
@@ -121,15 +149,18 @@ class BluetoothConnect {
     private Runnable runreader = new Runnable() {
         @Override
         public void run() {
-            changeListener.OnDataReadListener(data);
+            dataReader.OnDataReadListener(data);
         }
     };
 
     private Runnable connectreader = new Runnable() {
         @Override
         public void run() {
-            changeListener.OnChangeListener(bluetoothSocket.isConnected());
-            if (!bluetoothSocket.isConnected()) {
+            connectChangeListener.OnConnectChangeListener(bluetoothSocket.isConnected());
+            if (!create) {
+                create = true;
+            }
+            if (ok && !bluetoothSocket.isConnected()) {
                 ConnectCreat();
             }
         }
@@ -161,7 +192,7 @@ class BluetoothConnect {
     private Runnable bondsNotyf = new Runnable() {
         @Override
         public void run() {
-            changeListener.OnEnableListener(devices);
+            enabledListener.OnEnableListener(devices);
         }
     };
 
