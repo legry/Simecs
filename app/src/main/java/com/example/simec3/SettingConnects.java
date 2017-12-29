@@ -5,13 +5,21 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.ArrayAdapter;
+import android.util.JsonWriter;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SettingConnects extends AppCompatActivity {
-    BluetoothConnect podacha, shkaf;
     private RecyclerView recyclerView;
     SettsConnectAdapter adapter;
     List<DevConns> devConnses;
@@ -26,14 +34,28 @@ public class SettingConnects extends AppCompatActivity {
         else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
             recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         devConnses = new ArrayList<>();
-        adapter = new SettsConnectAdapter(devConnses);
-        recyclerView.setAdapter(adapter);
-
         devConnses.add(new DevConns("Подача", this));
-        recyclerView.getAdapter().notifyDataSetChanged();
-
         devConnses.add(new DevConns("Шкаф", this));
-        recyclerView.getAdapter().notifyDataSetChanged();
+        adapter = new SettsConnectAdapter(devConnses);
+
+        JSONObject jsObj = new JSONObject();
+        try {
+            jsObj.put("adapter", adapter);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
+            recyclerView.setAdapter((SettsConnectAdapter) jsObj.get("adapter"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
+            JsonWriter writer = new JsonWriter(new FileWriter("myadapter.json"));
+            writer.beginObject().
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
