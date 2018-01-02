@@ -1,69 +1,56 @@
 package com.example.simec3;
 
-import android.content.res.Configuration;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.JsonWriter;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.TextView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-public class SettingConnects extends AppCompatActivity {
-    private RecyclerView recyclerView;
-    SettsConnectAdapter adapter;
-    List<DevConns> devConnses;
+public class SettingConnects extends AppCompatActivity implements View.OnClickListener {
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals("simec")) {
+                ((TextView)findViewById(R.id.from_service)).setText(String.valueOf(intent.getIntExtra("mybluth", 0)));
+                ((TextView)findViewById(R.id.from_activity)).setText(String.valueOf(intent.getIntExtra("BluthSetts", 0)));
+            }
+        }
+    };
+    ComponentName serviceName = new ComponentName("com.example.mybluetoothservice", "com.example.mybluetoothservice.MyBlueth"),
+    activityName = new ComponentName("com.example.mybluetoothservice", "com.example.mybluetoothservice.BluthSetts");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_connects);
-        recyclerView = (RecyclerView) findViewById(R.id.recycler);
-        recyclerView.setHasFixedSize(true);
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-            recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
-        else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-            recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        devConnses = new ArrayList<>();
-        devConnses.add(new DevConns("Подача", this));
-        devConnses.add(new DevConns("Шкаф", this));
-        adapter = new SettsConnectAdapter(devConnses);
-
-        JSONObject jsObj = new JSONObject();
-        try {
-            jsObj.put("adapter", adapter);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        try {
-            recyclerView.setAdapter((SettsConnectAdapter) jsObj.get("adapter"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        try {
-            JsonWriter writer = new JsonWriter(new FileWriter("myadapter.json"));
-            writer.beginObject().
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        findViewById(R.id.start_service).setOnClickListener(this);
+        findViewById(R.id.start_activity).setOnClickListener(this);
+        findViewById(R.id.stop_service).setOnClickListener(this);
+        registerReceiver(receiver, new IntentFilter("simec"));
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-            recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
-        else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-            recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.start_service:
+                startService(new Intent().setComponent(serviceName).putExtra("action", "simec"));
+                break;
+            case R.id.stop_service:
+                stopService(new Intent().setComponent(serviceName));
+                break;
+            case R.id.start_activity:
+                startActivity(new Intent().setComponent(activityName).putExtra("action", "simec"));
+                break;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(receiver);
     }
 }
