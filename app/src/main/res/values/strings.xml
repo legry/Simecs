@@ -39,4 +39,8 @@
     <string name="stop">стоп</string>
     <string name="amps">Ток в амперах:</string>
     <string name="_67_8">67.8</string>
+    <string-array name="devices">
+        <item>podacha</item>
+        <item>stanok</item>
+    </string-array>
 </resources>

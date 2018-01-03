@@ -1,5 +1,6 @@
 package com.example.simec3;
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -79,7 +80,9 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
             case R.id.connects:
-                Intent intent = new Intent(this, SettingConnects.class);
+                Intent intent = new Intent();
+                intent.setComponent(new ComponentName("com.example.mybluetoothservice", "com.example.mybluetoothservice.BluthSetts"));
+                intent.putExtra("devices", getResources().getStringArray(R.array.devices));
                 startActivity(intent);
                 break;
             case android.R.id.home:
