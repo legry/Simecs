@@ -16,8 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -26,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawer;
     volatile public static byte pusk_data = 0b00000000;
     Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +72,13 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    private void openBluthSetts() {
+        Intent intent = new Intent();
+        intent.setComponent(new ComponentName("com.example.mybluetoothservice", "com.example.mybluetoothservice.BluthSetts"));
+        intent.putExtra("devices", getResources().getStringArray(R.array.devices));
+        startActivity(intent);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -80,14 +86,12 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
             case R.id.connects:
-                Intent intent = new Intent();
-                intent.setComponent(new ComponentName("com.example.mybluetoothservice", "com.example.mybluetoothservice.BluthSetts"));
-                intent.putExtra("devices", getResources().getStringArray(R.array.devices));
-                startActivity(intent);
+                openBluthSetts();
                 break;
             case android.R.id.home:
                 mDrawer.openDrawer(GravityCompat.START);
         }
         return super.onOptionsItemSelected(item);
     }
+
 }
