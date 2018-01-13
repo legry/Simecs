@@ -2,6 +2,7 @@ package com.example.simec3;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -14,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -44,12 +44,7 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.alarm_stop);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                pusk_data = 0b00000000;
-            }
-        });
+        fab.setOnClickListener(view -> pusk_data = 0b00000000);
         final Handler handler = new Handler();
         new Timer().schedule(new TimerTask() {
             @Override
@@ -75,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     private void openBluthSetts() {
         Intent intent = new Intent();
         intent.setComponent(new ComponentName("com.example.mybluetoothservice", "com.example.mybluetoothservice.BluthSetts"));
+        intent.putExtra("action", "simec3");
         intent.putExtra("devices", getResources().getStringArray(R.array.devices));
         startActivity(intent);
     }
