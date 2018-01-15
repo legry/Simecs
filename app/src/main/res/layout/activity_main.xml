@@ -49,6 +49,14 @@
 
         </android.support.v4.view.ViewPager>
 
+        <SurfaceView
+            android:id="@+id/surfaceView"
+            android:layout_width="261dp"
+            android:layout_height="148dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="16dp" />
+
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/alarm_stop"
             android:layout_width="wrap_content"
@@ -79,4 +87,5 @@
         app:menu="@menu/my_navigation_items">
 
     </android.support.design.widget.NavigationView>
+
 </android.support.v4.widget.DrawerLayout>
