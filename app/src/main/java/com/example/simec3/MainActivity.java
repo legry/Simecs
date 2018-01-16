@@ -2,13 +2,10 @@ package com.example.simec3;
 
 import android.content.ComponentName;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
@@ -19,19 +16,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawer;
     volatile public static byte pusk_data = 0b00000000;
     Toolbar toolbar;
-    Bitmap bmp;
-    private boolean running = false;
+    MyDrawer myDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +46,11 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.alarm_stop);
-        fab.setOnClickListener(view -> {pusk_data = 0b00000000; running = !running;});
-        bmp = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-        ((SurfaceView) findViewById(R.id.surfaceView)).getHolder().addCallback(new SurfaceHolder.Callback() {
-            MyDrawer myDrawer;
+        fab.setOnClickListener(view -> pusk_data = 0b00000000);
+        SurfaceView mySurface = ((SurfaceView) findViewById(R.id.surfaceView));
+        SurfaceHolder surfaceHolder = mySurface.getHolder();
+        surfaceHolder.addCallback(new SurfaceHolder.Callback() {
+
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
                 myDrawer = new MyDrawer(surfaceHolder);
@@ -71,78 +66,98 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
                 boolean retry = true;
-                myDrawer.setRunning(false);
-                while (retry) {
-                    try {
-                        myDrawer.join();
-                        retry = false;
-                    } catch (InterruptedException e) {
+                if (myDrawer != null) {
+                    myDrawer.setRunning(false);
+                    while (retry) {
+                        try {
+                            myDrawer.join();
+                            retry = false;
+                        } catch (InterruptedException ignored) {
+                        }
                     }
                 }
             }
         });
-        final Handler handler = new Handler();
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(runnable);
+        mySurface.setOnTouchListener((v, m) -> {
+            switch (m.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    myDrawer.setUpdn(true);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    myDrawer.setUpdn(false);
+                    break;
             }
-        }, 0, 100);
+            return true;
+        });
     }
 
     private class MyDrawer extends Thread {
         final SurfaceHolder surfaceHolder;
-        private int x = 0;
+        private boolean run;
+        private Paint pnt;
+        private boolean updn;
+        int i = 0;
+        Rect rect;
 
         MyDrawer(SurfaceHolder surfaceHolder) {
             this.surfaceHolder = surfaceHolder;
+            pnt = new Paint();
+            pnt.setStyle(Paint.Style.FILL);
+            pnt.setColor(getColor(android.R.color.holo_purple));
+            rect = new Rect(0, 0, 200, 200);
         }
 
         @Override
         public void run() {
+
             Canvas canvas = null;
-            while (running)
-                try {
-                    canvas = surfaceHolder.lockCanvas();
-                    synchronized (surfaceHolder) {
-                        x++;
+            while (run) {
+                if (((updn) && (i < 50)) || (!(updn) && (i > 0))) {
+                    try {
+                        synchronized (surfaceHolder) {
+                            if ((updn) && (i < 50)) {
+                                rect.top += 1;
+                                rect.left += 1;
+                                rect.right -= 1;
+                                rect.bottom -= 1;
+                                i++;
+                            } else if (!(updn) && (i > 0)) {
+
+                                rect.top -= 1;
+                                rect.left -= 1;
+                                rect.right += 1;
+                                rect.bottom += 1;
+
+                                i--;
+                            }
+                            canvas = surfaceHolder.lockCanvas();
+                            if (canvas != null) {
+                                canvas.drawColor(getColor(android.R.color.white));
+                                canvas.drawRect(rect, pnt);
+                            }
+                        }
                         try {
-                            Draw(canvas, x, 1);
-                            sleep(500);
+                            sleep(50);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                    }
-                } finally {
-                    if (canvas != null) {
-                        surfaceHolder.unlockCanvasAndPost(canvas);
+                    } finally {
+                        if (canvas != null) {
+                            surfaceHolder.unlockCanvasAndPost(canvas);
+                        }
                     }
                 }
+            }
         }
 
         void setRunning(boolean run) {
-            running = run;
+            this.run = run;
+        }
+
+        void setUpdn(boolean updn) {
+            this.updn = updn;
         }
     }
-
-    protected void Draw(Canvas canvas, int x, int xSpeed)
-    {
-        if (x == 100 - bmp.getWidth())
-        {
-            xSpeed = -1;
-        }
-        if (x == 0)
-        {
-            xSpeed = 1;
-        }
-        x = x + xSpeed;
-        canvas.drawColor(Color.BLACK);
-        canvas.drawBitmap(bmp, x, 10, null);
-    }
-
-    Runnable runnable = () -> {
-        toolbar.setTitle(String.valueOf(pusk_data));
-    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
