@@ -26,18 +26,7 @@ class PusksAdapter extends RecyclerView.Adapter<PusksAdapter.MyHolder> {
     @Override
     public void onBindViewHolder(final MyHolder holder, int position) {
         holder.textView.setText(dops.get(position).getTitles());
-        holder.start.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                pusk_data |= (1 << (holder.getAdapterPosition() + 3));
-            }
-        });
-        holder.stop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                pusk_data &= ~(1 << (holder.getAdapterPosition() + 3));
-            }
-        });
+        holder.button.setOnClickListener(v -> holder.button.setSelected(!holder.button.isSelected()));
     }
 
     @Override
@@ -47,12 +36,11 @@ class PusksAdapter extends RecyclerView.Adapter<PusksAdapter.MyHolder> {
 
     class MyHolder extends RecyclerView.ViewHolder {
         TextView textView;
-        Button start, stop;
+        Button button;
         MyHolder(View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.titledop);
-            start = itemView.findViewById(R.id.start);
-            stop = itemView.findViewById(R.id.stop);
+            button = itemView.findViewById(R.id.button);
         }
     }
 }
