@@ -25,7 +25,7 @@ public class PusksFragment extends Fragment {
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
             recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 4));
+            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
         List<Pusks> dops = new ArrayList<>();
         String[] doptitles = getResources().getStringArray(R.array.doptitles);
         for (String doptitle : doptitles) {
@@ -41,7 +41,7 @@ public class PusksFragment extends Fragment {
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         } else if (newConfig.orientation ==Configuration.ORIENTATION_LANDSCAPE) {
-            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 4));
+            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
         }
     }
 }

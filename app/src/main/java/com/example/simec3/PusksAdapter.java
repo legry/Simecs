@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.List;
@@ -26,7 +27,7 @@ class PusksAdapter extends RecyclerView.Adapter<PusksAdapter.MyHolder> {
     @Override
     public void onBindViewHolder(final MyHolder holder, int position) {
         holder.textView.setText(dops.get(position).getTitles());
-        holder.button.setOnClickListener(v -> holder.button.setSelected(!holder.button.isSelected()));
+        holder.puskatel.setOnClickListener(v -> holder.puskatel.setSelected(!holder.puskatel.isSelected()));
     }
 
     @Override
@@ -36,11 +37,11 @@ class PusksAdapter extends RecyclerView.Adapter<PusksAdapter.MyHolder> {
 
     class MyHolder extends RecyclerView.ViewHolder {
         TextView textView;
-        Button button;
+        ImageButton puskatel;
         MyHolder(View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.titledop);
-            button = itemView.findViewById(R.id.button);
+            puskatel = itemView.findViewById(R.id.puskatel);
         }
     }
 }
