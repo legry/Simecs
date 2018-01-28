@@ -10,11 +10,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.ArduinoAIDL.IArduino;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class PusksFragment extends Fragment {
     private RecyclerView recyclerView;
+    IArduino iArduino;
+    List<Pusks> dops;
+    public void setiArduino(IArduino iArduino) {
+        this.iArduino = iArduino;
+        recyclerView.setAdapter(new PusksAdapter(dops));
+    }
 
     @Nullable
     @Override
@@ -26,12 +34,11 @@ public class PusksFragment extends Fragment {
             recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
             recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-        List<Pusks> dops = new ArrayList<>();
+        dops = new ArrayList<>();
         String[] doptitles = getResources().getStringArray(R.array.doptitles);
         for (String doptitle : doptitles) {
             dops.add(new Pusks(doptitle));
         }
-        recyclerView.setAdapter(new PusksAdapter(dops));
         return v;
     }
 

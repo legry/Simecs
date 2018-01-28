@@ -10,12 +10,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.ArduinoAIDL.IArduino;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class PriborsFragment extends Fragment {
     private RecyclerView recyclerView;
-
+    IArduino iArduino;
+    List<Pribors> osnovs;
+    public void setiArduino(IArduino iArduino) {
+        this.iArduino = iArduino;
+        recyclerView.setAdapter(new PriborsAdapter(osnovs));
+    }
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -26,13 +33,12 @@ public class PriborsFragment extends Fragment {
             recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
         else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
             recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        List<Pribors> osnovs = new ArrayList<>();
+        osnovs = new ArrayList<>();
         String[] titles = getResources().getStringArray(R.array.titles);
         String[] showcoments = getResources().getStringArray(R.array.showcoments);
         for (int i = 0; i < titles.length; i++) {
             osnovs.add(new Pribors(titles[i], showcoments[i]));
         }
-        recyclerView.setAdapter(new PriborsAdapter(osnovs));
         return v;
     }
 

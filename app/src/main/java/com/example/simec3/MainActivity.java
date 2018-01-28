@@ -1,8 +1,11 @@
 package com.example.simec3;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
@@ -14,16 +17,44 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.ArduinoAIDL.IArduino;
+
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawer;
     volatile public static byte pusk_data = 0b00000000;
     Toolbar toolbar;
 
+    IArduino iArduino;
+
+    ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            iArduino = IArduino.Stub.asInterface(service);
+            ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+            VPAdapter vpAdapter = new VPAdapter(getSupportFragmentManager());
+            vpAdapter.addPages(new PriborsFragment(), "Приборы");
+            vpAdapter.addPages(new PusksFragment(), "пускатели");
+            viewPager.setAdapter(vpAdapter);
+            TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
+            tabs.setupWithViewPager(viewPager);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            iArduino = null;
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Intent intent = new Intent();
+        intent.setComponent(new ComponentName("com.example.mybluetoothservice", "com.example.mybluetoothservice.MyBlueth"));
+        startService(intent);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mDrawer = (DrawerLayout) findViewById(R.id.drawer);
@@ -31,13 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 this, mDrawer, toolbar, R.string.drawer_open, R.string.drawer_close);
         mDrawer.addDrawerListener(toggle);
         toggle.syncState();
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        VPAdapter vpAdapter = new VPAdapter(getSupportFragmentManager());
-        vpAdapter.addPages(new PriborsFragment(), "Приборы");
-        vpAdapter.addPages(new PusksFragment(), "пускатели");
-        viewPager.setAdapter(vpAdapter);
-        TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
-        tabs.setupWithViewPager(viewPager);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.alarm_stop);
         fab.setOnClickListener(view -> pusk_data = 0b00000000);
 

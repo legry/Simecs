@@ -12,6 +12,11 @@
         <item>@string/nasos</item>
         <item>@string/opusk_ram</item>
     </string-array>
+    <string-array name="pribor_comands" >
+        <item>glavamp</item>
+        <item>nasosamp</item>
+        <item>opuskvol</item>
+    </string-array>
     <string-array name="showcoments">
         <item>Ток в амперах</item>
         <item>Ток в амперах</item>
@@ -35,8 +40,6 @@
     <string name="corrs">Корректировка</string>
     <string name="connects">Соединения</string>
     <string name="textview">TextView</string>
-    <string name="start">Пуск</string>
-    <string name="stop">стоп</string>
     <string name="amps">Ток в амперах:</string>
     <string name="_67_8">67.8</string>
     <string-array name="devices">
