@@ -11,16 +11,28 @@ import android.widget.TextView;
 
 import com.example.ArduinoAIDL.IArduino;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 
 class PriborsAdapter extends RecyclerView.Adapter<PriborsAdapter.MyHolder> {
     private List<Pribors> osnovs;
     private final IArduino iArduino;
     private String[] cmnds;
+    private Map<String, String> arduinos = new HashMap<>();
     PriborsAdapter(Context context, List<Pribors> osnovs, IArduino iArduino) {
         this.osnovs = osnovs;
         this.iArduino = iArduino;
         cmnds = context.getResources().getStringArray(R.array.pribor_comands);
+        for (int i = 0; i < 3; i++) {
+            if (i < 2) {
+                arduinos.put(Integer.toString(i), "stanok");
+            } else if (i < 3) {
+                arduinos.put(Integer.toString(i), "podacha");
+            }
+        }
     }
 
     @Override
@@ -37,7 +49,7 @@ class PriborsAdapter extends RecyclerView.Adapter<PriborsAdapter.MyHolder> {
                 try {
                     String rslt = "----";
                     synchronized (iArduino) {
-                        rslt = iArduino.comandBridge(cmnds[position]);
+                        rslt = iArduino.comandBridge(arduinos.get(Integer.toString(position)), cmnds[position]);
                     }
                     holder.shows.setText(rslt);
                 } catch (RemoteException e) {
