@@ -17,6 +17,15 @@
         <item>nasosamp</item>
         <item>opuskvol</item>
     </string-array>
+    <string-array name="pusk_comands" >
+        <item>gl_dv</item>
+        <item>nasos</item>
+        <item>opusk_ram</item>
+        <item>tel_rasp</item>
+        <item>dv_doz</item>
+        <item>qwik_up</item>
+        <item>qwik_down</item>
+    </string-array>
     <string-array name="showcoments">
         <item>Ток в амперах</item>
         <item>Ток в амперах</item>

@@ -17,11 +17,9 @@ import java.util.List;
 
 public class PriborsFragment extends Fragment {
     private RecyclerView recyclerView;
-    IArduino iArduino;
     List<Pribors> osnovs;
     public void setiArduino(IArduino iArduino) {
-        this.iArduino = iArduino;
-        recyclerView.setAdapter(new PriborsAdapter(osnovs));
+        recyclerView.setAdapter(new PriborsAdapter(getContext(), osnovs, iArduino));
     }
     @Nullable
     @Override
